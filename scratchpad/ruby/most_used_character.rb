@@ -3,6 +3,7 @@
 # add ability to output to a file
 # add ability to specify branch
 # add ability to filter ascii
+# add ability to display as %
 
 require 'pathname'
 require 'mkmf'
@@ -49,7 +50,7 @@ def use_less(output)
   end
 end
 
-project_dir = Pathname.new(File.expand_path('~/Repositories/unicef'))
+project_dir = Pathname.new(File.expand_path('~/Repositories/sga'))
 # project_dir = Pathname.new(File.expand_path('~/Repositories/practice'))
 Dir.chdir(project_dir)
 
@@ -74,9 +75,12 @@ def print_git_project_char_count
     memo.merge(tally) { |_, x, y| x + y }
   end
 
-  list = list.sort_by { |_, value| value }.reverse #.map { |pair| pair.reverse }
+  total_count = list.inject(0) { |acc, (_, value)| acc + value }
 
-  value = list.map { |pair| pair.map(&:size).max }.max
+  puts total_count.to_f
+  list = list.sort_by { |_, value| value }.reverse.map { |(key, value)| [key, (value * 100.0 / total_count).round(2).to_s] }
+
+  value = list.map { |pair| [pair[0].size, pair[1].to_s.size].max }.max
 
   # TODO work on this
   fits_times = value - (value / 2)
