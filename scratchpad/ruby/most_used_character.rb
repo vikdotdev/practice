@@ -5,6 +5,38 @@
 # add ability to filter ascii
 # add ability to display as %
 
+class Parent
+  attr_reader :version
+
+  def initialize(version)
+    @version = version
+  end
+
+  def self.[](version)
+    new(version)
+  end
+
+  # is getting called on Child class definition
+  def self.inherited(subclass)
+    puts "#{subclass} inheriting from #{self.class}."
+  end
+
+  def hello
+    puts "Hello #{@version}."
+  end
+end
+
+# inherited is called when defining class with Parent interitance
+class Child < Parent
+end
+
+Child[1.0].hello
+child = Child[1.0]
+child.hello
+parent = Parent[2.0]
+parent.hello
+parent.version
+
 require 'pathname'
 require 'mkmf'
 require 'bundler/inline'
@@ -50,7 +82,7 @@ def use_less(output)
   end
 end
 
-project_dir = Pathname.new(File.expand_path('~/Repositories/sga'))
+project_dir = Pathname.new(File.expand_path('~/Repositories/unicef'))
 # project_dir = Pathname.new(File.expand_path('~/Repositories/practice'))
 Dir.chdir(project_dir)
 
@@ -76,31 +108,32 @@ def print_git_project_char_count
   end
 
   total_count = list.inject(0) { |acc, (_, value)| acc + value }
-
-  puts total_count.to_f
   list = list.sort_by { |_, value| value }.reverse.map { |(key, value)| [key, (value * 100.0 / total_count).round(2).to_s] }
+  pp list
 
-  value = list.map { |pair| [pair[0].size, pair[1].to_s.size].max }.max
+  # puts total_count.to_f
 
-  # TODO work on this
-  fits_times = value - (value / 2)
-  puts fits_times
+  # value = list.map { |pair| [pair[0].size, pair[1].to_s.size].max }.max
+
+  # # TODO work on this
+  # fits_times = value - (value / 2)
+  # puts fits_times
 
 
-  sliced_list = list.each_slice(fits_times).to_a
+  # sliced_list = list.each_slice(fits_times).to_a
 
-  flattened = sliced_list.map(&:flatten)
-  flattened[-1].concat(Array.new(flattened[0].size - flattened[-1].size))
-  begin
-    table = Terminal::Table.new rows: flattened, style: { width: TTY::Screen.width - SCREEN_OFFSET }
-  rescue
-    # not working
-    warn "Terminal window is too narrow to fit the table. Aborting"
+  # flattened = sliced_list.map(&:flatten)
+  # flattened[-1].concat(Array.new(flattened[0].size - flattened[-1].size))
+  # begin
+  #   table = Terminal::Table.new rows: flattened, style: { width: TTY::Screen.width - SCREEN_OFFSET }
+  # rescue
+  #   # not working
+  #   warn "Terminal window is too narrow to fit the table. Aborting"
 
-    return
-  end
+  #   return
+  # end
 
-  puts table
+  # puts table
 end
 
 print_git_project_char_count
